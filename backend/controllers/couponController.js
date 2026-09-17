@@ -17,13 +17,14 @@ const getCoupons = async (req, res) => {
 // @desc    Validate coupon code and return discount amount in INR
 // @access  Public
 const validateCoupon = async (req, res) => {
-  const { code, subtotal } = req.body;
+  const { code } = req.body;
+  const rawSubtotal = req.body.subtotal ?? req.body.orderAmount;
 
   if (!code || typeof code !== 'string') {
     return res.status(400).json({ message: 'Coupon code is required' });
   }
 
-  const numericSubtotal = parseFloat(subtotal);
+  const numericSubtotal = parseFloat(rawSubtotal);
   if (isNaN(numericSubtotal) || numericSubtotal <= 0) {
     return res.status(400).json({ message: 'Invalid cart subtotal' });
   }

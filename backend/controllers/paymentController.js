@@ -57,14 +57,8 @@ exports.verifyPayment = async (req, res) => {
       if (order_id) {
         const order = await Order.findById(order_id);
         if (order) {
-          order.isPaid = true;
-          order.paidAt = Date.now();
-          order.paymentResult = {
-            id: razorpay_payment_id,
-            status: 'successful',
-            update_time: Date.now(),
-            email_address: req.user.email,
-          };
+          order.paymentStatus = 'Completed';
+          order.status = 'Confirmed';
           await order.save();
         }
       }

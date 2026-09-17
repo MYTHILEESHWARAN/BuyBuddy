@@ -175,6 +175,7 @@ const Checkout = () => {
         items: cartItems.map((item) => ({ product: item._id, quantity: item.quantity })),
         shippingAddress: shipping,
         paymentMethod,
+        discountAmount,
         totalAmount: grandTotal,
         paymentStatus: 'Pending'
       };

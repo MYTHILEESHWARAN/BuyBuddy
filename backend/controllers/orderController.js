@@ -20,7 +20,7 @@ const createOrder = async (req, res) => {
   }
 
   try {
-    let totalAmount = 0;
+    let itemsSubtotal = 0;
     const resolvedItems = [];
 
     // Verify all items and stock
@@ -45,7 +45,7 @@ const createOrder = async (req, res) => {
         });
       }
 
-      totalAmount += product.price * qty;
+      itemsSubtotal += product.price * qty;
 
       resolvedItems.push({
         product: product._id,
@@ -61,13 +61,22 @@ const createOrder = async (req, res) => {
       await Product.findByIdAndUpdate(item.product, { $inc: { stock: -item.quantity } });
     }
 
+    // Apply optional discount, shipping fee, and GST tax
+    let discount = 0;
+    if (req.body.discountAmount && !isNaN(parseFloat(req.body.discountAmount))) {
+      discount = Math.min(Math.max(0, parseFloat(req.body.discountAmount)), itemsSubtotal);
+    }
+    const shippingFee = (itemsSubtotal - discount) > 499 ? 0 : 50;
+    const estimatedTax = (itemsSubtotal - discount) * 0.18;
+    const calculatedGrandTotal = parseFloat((itemsSubtotal - discount + shippingFee + estimatedTax).toFixed(2));
+
     const selectedMethod = ['COD', 'UPI', 'Card', 'NetBanking'].includes(paymentMethod) ? paymentMethod : 'COD';
     const initialPaymentStatus = selectedMethod === 'COD' ? 'Pending' : 'Completed'; // Demo simulation
 
     const order = await Order.create({
       user: req.user._id,
       items: resolvedItems,
-      totalAmount: parseFloat(totalAmount.toFixed(2)),
+      totalAmount: calculatedGrandTotal,
       shippingAddress,
       paymentMethod: selectedMethod,
       paymentStatus: initialPaymentStatus,
