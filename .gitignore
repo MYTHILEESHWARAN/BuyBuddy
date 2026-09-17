@@ -1,0 +1,30 @@
+# Environment Variables
+.env
+*.env
+.env.local
+.env.production
+
+# Node Modules
+node_modules/
+*/node_modules/
+
+# Build Outputs
+dist/
+build/
+frontend/dist/
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS Files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# Misc
+*.pid
+.cache/
